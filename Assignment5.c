@@ -1,82 +1,87 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <sys/sysinfo.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
-int main() {    
-    int *AR1 = NULL;
-    int *AR2 = NULL;
-    int *AR3 = NULL;
-    int *Array1 = NULL;
-    int *Array2 = NULL;
-    int *Array3 = NULL;
-    int m = 3; //how many arrays *3 you need to hold 1mb each
-    struct timespec start, end;
-    struct sysinfo sys_info;
-    long long time;
+int main() {
+    struct rlimit mem_limit; //call for memory limit
+    getrlimit(RLIMIT_AS, &mem_limit); //call for memory limit
+    long available_memory = mem_limit.rlim_cur / 3;  // Divide by 3 for each array
+    int** AR1 = NULL;
+    int** AR2 = NULL;
+    int** AR3 = NULL;
+    int** AR4 = NULL;
+    int element_size = 1024 * 1024;  // 1MB
+    struct timeval start, end;
+    long long elapsed_micros; //measure of time
+
+    gettimeofday(&start, NULL);
     int count = 0;
-    int elements = 0;
-
-    if (sysinfo(&sys_info) == 0) {
-        long long total_memory = sys_info.totalram * sys_info.mem_unit;
-        long long free_memory = sys_info.freeram * sys_info.mem_unit;
-        printf("Total memory: %lld bytes\n", total_memory);
-        printf("Free memory: %lld bytes\n", free_memory);
-    } else {
-        printf("Failed to get system information.\n");
-    }
-
-    //time measurement for allocation of 3m arrays of size 1mb each;
-    clock_gettime(CLOCK_MONOTONIC, &start);
-    while(1){
-        //Malloc new element in AR1 in each element
-        int* Array1 = (int*)malloc(sizeof(int));
-        if(Array1 == NULL){ //no more memory for AR1
+    while (1) {
+        if (available_memory < element_size)
             break;
-        } else count++;
-        //Malloc new element in AR2 in each element
-        int* Array2 = (int*)malloc(sizeof(int));
-        if(Array2 == NULL){ //no more memory for AR2
+        int* newElementAR1 = (int*)malloc(element_size);
+        int* newElementAR2 = (int*)malloc(element_size);
+        int* newElementAR3 = (int*)malloc(element_size);
+        if (newElementAR1 == NULL || newElementAR2 == NULL || newElementAR3 == NULL)
             break;
-        }else count++;
-        //Malloc new element in AR3 in each element
-        int* Array3 = (int*)malloc(sizeof(int));
-        if(Array3 == NULL){ //no more memory for AR3
+        AR1 = (int**)realloc(AR1, (count + 1) * sizeof(int*));
+        AR2 = (int**)realloc(AR2, (count + 1) * sizeof(int*));
+        AR3 = (int**)realloc(AR3, (count + 1) * sizeof(int*));
+        AR1[count] = newElementAR1;
+        AR2[count] = newElementAR2;
+        AR3[count] = newElementAR3;
+        count++;
+        available_memory -= element_size;
+    }
+    gettimeofday(&end, NULL);
+    elapsed_micros = (end.tv_sec - start.tv_sec) * 1000000LL + (end.tv_usec - start.tv_usec); //microseconds
+    printf("Time taken for initial allocation: %lld microseconds\n", elapsed_micros);
+    printf("Number of elements in AR1, AR2, AR3: %d\n", count);
+    gettimeofday(&start, NULL);
+    for (int i = 0; i < count; i += 2) {
+        free(AR1[i]);
+        free(AR2[i]);
+        free(AR3[i]);
+    }
+    gettimeofday(&end, NULL);
+    elapsed_micros = (end.tv_sec - start.tv_sec) * 1000000LL + (end.tv_usec - start.tv_usec);
+    printf("Time taken for deallocation of even number elements: %lld microseconds\n", elapsed_micros);
+
+    gettimeofday(&start, NULL);
+    int** tempAR4 = NULL;
+    int ar4_count = 0;
+    int ar4_element_size = 1024 * 1024 * 1.25;  // 1.25MB
+    while (1) {
+        if (available_memory < ar4_element_size)
             break;
-        }else count++;
+        int* newElementAR4 = (int*)malloc(ar4_element_size);
+        if (newElementAR4 == NULL)
+            break;
+        tempAR4 = (int**)realloc(tempAR4, (ar4_count + 1) * sizeof(int*));
+        tempAR4[ar4_count] = newElementAR4;
+        ar4_count++;
+        available_memory -= ar4_element_size;
     }
+    AR4 = tempAR4;
+    gettimeofday(&end, NULL);
+    elapsed_micros = (end.tv_sec - start.tv_sec) * 1000000LL + (end.tv_usec - start.tv_usec);
+    printf("Time taken for allocation to AR4: %lld microseconds\n", elapsed_micros);
+    printf("Number of elements in AR4: %d\n", ar4_count);
 
-    AR1 = Array1;
-    AR2 = Array2;
-    AR3 = Array3;
-    count++;
-
-    free(Array1);
-    free(Array2);
-    free(Array3);
-
-    printf("This was how many elements we had", count);
-
-    clock_gettime(CLOCK_MONOTONIC, &end);
-    time = (end.tv_sec - start.tv_sec) * 1000000000LL + (end.tv_sec - start.tv_sec);
-    printf("Time elapsed for #1 -- the allocation of 3m arrays that have 1mb each.\n", time);
-
-    time = 0;
-    //time measurement for deallocation or #2
-    clock_gettime(CLOCK_MONOTONIC, &start);
-    for(int i = 1; i <= m; i+2){
-        AR1[i];
-        AR2[i];
-        AR3[i];
+    for (int i = 0; i < count; i++) {
+        free(AR1[i]);
+        free(AR2[i]);
+        free(AR3[i]);
     }
-    clock_gettime(CLOCK_MONOTONIC, &end);
-
-    time = (end.tv_sec - start.tv_sec) * 1000000000LL + (end.tv_sec - start.tv_sec);
-    printf("Time elapsed for #2 -- the deallocation of even numbered arrays.\n", time);
-
     free(AR1);
     free(AR2);
     free(AR3);
+
+    for (int i = 0; i < ar4_count; i++) {
+        free(AR4[i]);
+    }
+    free(AR4);
 
     return 0;
 }
