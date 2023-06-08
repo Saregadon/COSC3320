@@ -4,25 +4,26 @@
 #include <sys/resource.h>
 
 int main() {
-    struct rlimit mem_limit; //call for memory limit
-    getrlimit(RLIMIT_AS, &mem_limit); //call for memory limit
-    long available_memory = mem_limit.rlim_cur / 3;  // Divide by 3 for each array
+    struct rlimit mem_limit;
+    getrlimit(RLIMIT_AS, &mem_limit);
+    long long available_memory = mem_limit.rlim_cur / 3;  // Divide by 3 for each array
+    printf("Available space to use is ", available_memory);
     int** AR1 = NULL;
     int** AR2 = NULL;
     int** AR3 = NULL;
     int** AR4 = NULL;
     int element_size = 1024 * 1024;  // 1MB
     struct timeval start, end;
-    long long elapsed_micros; //measure of time
+    long long elapsed_micros;
 
     gettimeofday(&start, NULL);
     int count = 0;
     while (1) {
         if (available_memory < element_size)
             break;
-        int* newElementAR1 = (int*)malloc(element_size);
-        int* newElementAR2 = (int*)malloc(element_size);
-        int* newElementAR3 = (int*)malloc(element_size);
+        int* Array1 = (int*)malloc(element_size);
+        int* Array2 = (int*)malloc(element_size);
+        int* Array3 = (int*)malloc(element_size);
         if (newElementAR1 == NULL || newElementAR2 == NULL || newElementAR3 == NULL)
             break;
         AR1 = (int**)realloc(AR1, (count + 1) * sizeof(int*));
