@@ -2,7 +2,6 @@
 #include <vector>
 #include <chrono>
 #include <random>
-#include <bits/stdc++.h>
 
 using namespace std;
 using namespace chrono;
