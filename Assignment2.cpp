@@ -19,7 +19,7 @@ void rowMajorOrder() {
                 numPageReads++;
             }
             numReads++;
-
+            //test test test
             numWrites++;
             if (pageIndex >= ACTIVE_MEMORY_SET_SIZE) { //checks if page is in memory set
                 numPageWrites++;

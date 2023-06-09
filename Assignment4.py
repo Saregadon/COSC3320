@@ -29,3 +29,7 @@ for n in sequence:
     time_version_1 = matrix_addition(n, 1)
     time_version_2 = matrix_addition(n, 2)
     print(f"n = {n}, Version 1 time = {time_version_1}, Version 2 time = {time_version_2}")
+
+#run using
+#python -u Assignment4.py
+#python3 -u Assignment4.py - wsl
