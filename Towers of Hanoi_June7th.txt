@@ -1,0 +1,97 @@
+Towers of Hanoi
+
+Upper and Lower bounds are the easiest way to find the Time Complexity.
+
+1. -----------------------------------------------------------
+Hanoi(a, b, c, n)
+	n = 1: A -> C
+	if n >= 2:{
+		Hanoi (A, C, B, n-1) -- r
+			A -> C
+		Hanoi (B, A, C, n-1) -- r2
+}
+
+The solution to the basic tower of hanoi question
+R = 2; 2 recursive calls
+D = 1; n - 1;
+
+2^(n-1) moves necessary
+
+Time complexity (2^n)
+Space complexlity (O(n)) - Limited in size by n
+
+2. -----------------------------------------------------------
+A <-> B <-> C
+Can only go A -> C through B if there is nothing smaller on B.
+HH(A, B, C, n)
+	n = 1: A -> B, B -> C
+	n>=2:{
+		HH(A, B, C, n-1)
+			A->B
+		HH(C, B, A, n-1)
+			B->C
+		HH(A, B, C, n-1)
+			}
+R = 3; 3 Recursive calls so == O(3^n)
+D = 1;
+Time complexity(3^n) - upper bound is 3 to the n, (Most important) Lower bound is O(2^n)
+Space complexity(O(n)) - limited in size by n
+
+master theorem, if r is 1. we have O(n/d) and O(r^(n/d))
+So, R = 3 so it was (O(3^(n/1)) so == O(3^n)
+
+3. -----------------------------------------------------------
+A -> B -> C-> D
+|	      |
+------<--------
+
+H4_3(A, B, C, D, n)					H4_2(A, B, C, D, n)
+n = 1: A->B, B->C, C->D					n=1: A->B, B->C
+n >= 2: {						n>=2:{
+	H4_3(A, B, C, D, n-1)					H4_3(A, B, C, D, n-1)
+		A->B, B->C						A->B, B->C
+	H4_2(D, A, B, C, n-1)					H4_3(D, A, B, C, n-1)
+		C->D,					     }
+	H4_2(B, C, D, A, n-1)
+	}
+
+Look into inductive assumption
+
+Time Complexity = R = 6, so it's O(6^n)
+Space Complexity = O(n) - limited in size by n
+
+--------------------------------------------------------------
+Case 2
+	r = 1 O (n/d)    ... O(1)
+	r>= 2 O(r^(n/d)) ... O(n)
+	-------------------------
+	n_i = n/c_i c_i> 1
+	n_i = n/c   c > 1
+-------------------------------------------------------------- 
+							               { O(n)			r < c
+basis : b               [T(1) = b		]	=>	T(n) = { O(n*log(n))		r = c
+			[T(n) = n*T*(n/c) + b*n ]		       { O(n^(log_c^(r)))	r > c
+
+--------------------------------------------------------------
+		     {  Worst   }
+Time complexity }    {  Average }   { Word complexity }
+Space Complexity}    {  Best    }   { Bit complexity }
+
+Word complexity of multiplying 2 numbers = 1; = It is a single arithmetic operation. 
+
+Bit complexity of multiplying 2m bit numbers = n ^(log_2 * 4) = n^2 O(m^2)
+z = x*4 = (a(shift)2^(m/2 bits) + b) * (c(shift)2^(m/2) + d) = a * c (shift) 2^m + (b * c + a * d) (shift) 2^(m/2) + b * d
+x [ a | b ]
+a = most significant bit
+b = least significant bit
+
+u = (a + b) * (c + d)
+v = a * c
+w = b * d
+claim = z = v(shift)2^n + (u-v-w)(shift)2^(m/2) + w == true
+
+u = a*c + a*d + b*c + b*d
+
+c = 2
+r = 3 , there are 3 multiplications in u, v, and w
+complexity = O(m^(log3)) = O(m^1.59) 

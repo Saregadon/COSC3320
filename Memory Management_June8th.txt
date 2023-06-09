@@ -1,0 +1,54 @@
+Memory Management -
+
+New memory is 1 dimensional.
+
+Row - major
+Cut into rows, and map the first row into main memory, then 2nd, 3rd, and 4th rows... to n rows.
+A[1:n, 1:n] and wanting the address A[i,j] - formula called 
+MEM [offset_A + (i-1)*n + j] = formula
+Will have to bypass rows (i-1).
+Reason why matrices are considered atomic. Requires 4 arithmetic operations(A[i,j],n) and it's fixed.
+
+Row major - 	p = n , a = n/2
+	j:= 1, n
+	i:= 1, n
+		A[i,j] := i + j
+
+		for(i = 1; i <= n; i++){
+			for(int j = 1; j <= n; j++){
+				// need to read and write each page, and subtract from the pages that are too far that have LRU
+				}
+			// subtract page i - 1 since we're not using those pages anymore.
+		}
+	(n - 1)*n = reads 		// n^2 reads
+	(n - 1)*n + n/2 = writes 	// n^2 - n/2 writes
+	O(n^2) pages
+
+Column - major
+MEM [offset_a + (j-1)*n + i] = formula
+
+Column major -	
+	j= 1, ... , n/2
+	j= n/2 , 1 , ... , n 
+	O(n) pages
+
+Memory Hierarchy -
+1. Registers - fastest memory - 1/10th of a nanosecond						]
+2. Caches - Level 1, Level 2, Level 3 (difference doesn't matter too much) - 1 nanosecond	]-- Electronic
+3. Main Memory - 5 to 10 nanoseconds								]
+4. External Memory (Disks) - Worst case 10 milliseconds or 10,000,000 nanoseconds	]---------- Mechanical
+	In order to access a value that's used to store on a magnetic disk, how long does that access take? Order of Milliseconds 
+	
+Virtual Memory Management = VMM -
+Rule of thumb - the smaller it is, the faster it is.
+Co-op external memory and use it as main memory.
+Active memory, a(active)* pages of size p . *main memory you have available.
+If you implement VMM - will need to provide the directory.
+A[i,j] will be in external memory if not implementing VMM.
+
+If active memory is full, will need a victim to boot. Number of page replacement strategies.
+Most commonly used page is "LRU". Least Recently Used page. Looks Looks for page that hasn't been used for the longest time.
+In practice, we never have a pure implementation for LRU - we need a time stamp for each page. Don't want to spend too much memory on the time stamp.
+
+If a page is dirty, it has to be written back to the disk before being overwritten with the new page. If not written back to the disk, loses information that was stored on the page. 
+If a replacement page is NOT dirty you do not have to write it back because nothing was written on it. Once that has happened, you can of course continue.
