@@ -1,75 +1,81 @@
 #include <iostream>
+#include <unordered_map>
+#include <list>
 
 const int PAGE_SIZE = 2000;
 const int ACTIVE_MEMORY_SET_SIZE = 1000;
 const int ARRAY_SIZE = 4000;
 
-void rowMajorOrder() {
-    int numReads = 0;
-    int numWrites = 0;
+class LRUCache {
+private:
+    int capacity;
+    std::unordered_map<int, std::list<int>::iterator> cache;
+    std::list<int> pageList;
+
+public:
+    LRUCache(int capacity) : capacity(capacity) {}
+
+    void refer(int pageIndex) {
+        if (cache.find(pageIndex) == cache.end()) {
+            if (pageList.size() == capacity) {
+                int lastPage = pageList.back();
+                pageList.pop_back();
+                cache.erase(lastPage);
+            }
+        } else {
+            pageList.erase(cache[pageIndex]);
+        }
+
+        pageList.push_front(pageIndex);
+        cache[pageIndex] = pageList.begin();
+    }
+
+    int getNumPageFaults() {
+        return pageList.size() - ACTIVE_MEMORY_SET_SIZE;
+    }
+
+    int getNumDiskReads() {
+        return (getNumPageFaults() + PAGE_SIZE - 1) / PAGE_SIZE;
+    }
+
+    int getNumDiskWrites() {
+        return (pageList.size() + PAGE_SIZE - 1) / PAGE_SIZE;
+    }
+};
+
+void simulateLRU() {
     int numPageReads = 0;
     int numPageWrites = 0;
+
+    LRUCache cache(ACTIVE_MEMORY_SET_SIZE);
 
     for (int I = 1; I <= ARRAY_SIZE; I++) {
         for (int J = 1; J <= ARRAY_SIZE; J++) {
             int pageIndex = (I - 1) / PAGE_SIZE;
-            
-            // Check if the page is not in the active memory set
-            if (pageIndex >= ACTIVE_MEMORY_SET_SIZE) {
-                numPageReads++;
-            }
-            numReads++;
-            //test test test
-            numWrites++;
-            if (pageIndex >= ACTIVE_MEMORY_SET_SIZE) { //checks if page is in memory set
-                numPageWrites++;
-            }
-        }
-    }
-
-    int numDiskReads = numPageReads / PAGE_SIZE;
-    int numDiskWrites = numPageWrites / PAGE_SIZE;
-
-    std::cout << "Row Major Order:\n";
-    std::cout << "Number of Disk Reads: " << numDiskReads << "\n";
-    std::cout << "Number of Disk Writes: " << numDiskWrites << "\n";
-}
-
-void columnMajorOrder() {
-    int numReads = 0;
-    int numWrites = 0;
-    int numPageReads = 0;
-    int numPageWrites = 0;
-
-    // Calculate the number of disk transfers (page reads and writes) for column major order
-    for (int J = 1; J <= ARRAY_SIZE; J++) {
-        for (int I = 1; I <= ARRAY_SIZE; I++) {
-            int pageIndex = (J - 1) / PAGE_SIZE;
 
             if (pageIndex >= ACTIVE_MEMORY_SET_SIZE) {
                 numPageReads++;
             }
-            numReads++;
 
-            numWrites++;
-            if (pageIndex >= ACTIVE_MEMORY_SET_SIZE) {
-                numPageWrites++;
-            }
+            cache.refer(pageIndex);
+
+            numPageWrites++;
         }
     }
 
-    int numDiskReads = numPageReads / PAGE_SIZE;
-    int numDiskWrites = numPageWrites / PAGE_SIZE;
+    int numDiskReads = cache.getNumDiskReads();
+    int numDiskWrites = cache.getNumDiskWrites();
 
-    std::cout << "Column Major Order:\n";
     std::cout << "Number of Disk Reads: " << numDiskReads << "\n";
     std::cout << "Number of Disk Writes: " << numDiskWrites << "\n";
 }
 
 int main() {
-    rowMajorOrder();
+    std::cout << "Row Major Order:\n";
+    simulateLRU();
     std::cout << "------------------------\n";
-    columnMajorOrder();
+    std::cout << "Column Major Order:\n";
+    simulateLRU();
 
     return 0;
 }
