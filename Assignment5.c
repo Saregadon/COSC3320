@@ -17,11 +17,12 @@ int main() {
 
     int element_size = 1024 * 1024;  // 1MB
     struct timeval start, end;
-    long long elapsed_micros;
+    long long elapsed_micros, elapsed_seconds;
 
     gettimeofday(&start, NULL);
     int count = 0;
-    while (count < 26001) { //changed from if (available_memory < element_size) break;
+    while (count < 130001) { // 130000 = m
+      if (available_memory < element_size) break;
         int* Array1 = (int*)malloc(element_size);
       if(Array1 == NULL) break;
         int* Array2 = (int*)malloc(element_size);
@@ -35,12 +36,13 @@ int main() {
         AR2[count] = Array2;
         AR3[count] = Array3;
         count++;
-        //printf("Number of elements in AR1, AR2, AR3: %d\n", count);
+        printf("Number of elements in AR1, AR2, AR3: %d\n", count);
         available_memory -= element_size;
     }
     gettimeofday(&end, NULL);
     elapsed_micros = (end.tv_sec - start.tv_sec) * 1000000LL + (end.tv_usec - start.tv_usec); //microseconds
-    printf("Time taken for initial allocation: %lld microseconds\n", elapsed_micros);
+    elapsed_seconds = elapsed_micros / 1000000; // seconds
+    printf("Time taken for initial allocation: %lld seconds\n", elapsed_seconds);
     printf("Number of elements in AR1, AR2, AR3: %d\n", count);
     gettimeofday(&start, NULL);
     for (int i = 0; i < count; i += 2) {
@@ -50,7 +52,8 @@ int main() {
     }
     gettimeofday(&end, NULL);
     elapsed_micros = (end.tv_sec - start.tv_sec) * 1000000LL + (end.tv_usec - start.tv_usec);
-    printf("Time taken for deallocation of even number elements: %lld microseconds\n", elapsed_micros);
+    elapsed_seconds = elapsed_micros / 1000000; // seconds
+    printf("Time taken for deallocation of even number elements: %lld seconds\n", elapsed_seconds);
 
     gettimeofday(&start, NULL);
     int** tempAR4 = NULL;
@@ -66,15 +69,16 @@ int main() {
         tempAR4[ar4_count] = newElementAR4;
         ar4_count++;
         available_memory -= ar4_element_size;
+        printf("Number of elements in AR4: %d\n", ar4_count);
     }
     AR4 = tempAR4;
     gettimeofday(&end, NULL);
     elapsed_micros = (end.tv_sec - start.tv_sec) * 1000000LL + (end.tv_usec - start.tv_usec);
-    printf("Time taken for allocation to AR4: %lld microseconds\n", elapsed_micros);
+    elapsed_seconds = elapsed_micros / 1000000; // seconds
+    printf("Time taken for allocation to AR4: %lld seconds\n", elapsed_seconds);
     printf("Number of elements in AR4: %d\n", ar4_count);
 
     for (int i = count - 2; i >= 0; i-=2) { //now frees odd memory
-        //printf("Check: %d\n", i);
         free(AR1[i]);
         free(AR2[i]);
         free(AR3[i]);
@@ -86,8 +90,9 @@ int main() {
     for (int i = 0; i < ar4_count; i++) { //frees all of AR4 memory
         free(AR4[i]);
     }
-    printf("Check Check3\n");
     free(AR4);
 
     return 0;
 }
+//gcc Assignment5.c -o Assignment
+// ./Assignment
