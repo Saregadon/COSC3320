@@ -7,32 +7,35 @@ int main() {
     struct rlimit mem_limit;
     getrlimit(RLIMIT_AS, &mem_limit);
     long long available_memory = mem_limit.rlim_cur / 3;  // Divide by 3 for each array
-    printf("Available space to use is ", available_memory);
     int** AR1 = NULL;
     int** AR2 = NULL;
     int** AR3 = NULL;
     int** AR4 = NULL;
+    int* newElementAR1 = NULL;
+    int* newElementAR2 = NULL;
+    int* newElementAR3 = NULL;
+
     int element_size = 1024 * 1024;  // 1MB
     struct timeval start, end;
     long long elapsed_micros;
 
     gettimeofday(&start, NULL);
     int count = 0;
-    while (1) {
-        if (available_memory < element_size)
-            break;
+    while (count < 26001) { //changed from if (available_memory < element_size) break;
         int* Array1 = (int*)malloc(element_size);
+      if(Array1 == NULL) break;
         int* Array2 = (int*)malloc(element_size);
+      if(Array2 == NULL) break;
         int* Array3 = (int*)malloc(element_size);
-        if (newElementAR1 == NULL || newElementAR2 == NULL || newElementAR3 == NULL)
-            break;
+      if(Array3 == NULL) break;
         AR1 = (int**)realloc(AR1, (count + 1) * sizeof(int*));
         AR2 = (int**)realloc(AR2, (count + 1) * sizeof(int*));
         AR3 = (int**)realloc(AR3, (count + 1) * sizeof(int*));
-        AR1[count] = newElementAR1;
-        AR2[count] = newElementAR2;
-        AR3[count] = newElementAR3;
+        AR1[count] = Array1;
+        AR2[count] = Array2;
+        AR3[count] = Array3;
         count++;
+        //printf("Number of elements in AR1, AR2, AR3: %d\n", count);
         available_memory -= element_size;
     }
     gettimeofday(&end, NULL);
@@ -53,7 +56,7 @@ int main() {
     int** tempAR4 = NULL;
     int ar4_count = 0;
     int ar4_element_size = 1024 * 1024 * 1.25;  // 1.25MB
-    while (1) {
+    while (ar4_count < 13000) {
         if (available_memory < ar4_element_size)
             break;
         int* newElementAR4 = (int*)malloc(ar4_element_size);
@@ -70,7 +73,8 @@ int main() {
     printf("Time taken for allocation to AR4: %lld microseconds\n", elapsed_micros);
     printf("Number of elements in AR4: %d\n", ar4_count);
 
-    for (int i = 0; i < count; i++) {
+    for (int i = count - 2; i >= 0; i-=2) { //now frees odd memory
+        //printf("Check: %d\n", i);
         free(AR1[i]);
         free(AR2[i]);
         free(AR3[i]);
@@ -79,9 +83,10 @@ int main() {
     free(AR2);
     free(AR3);
 
-    for (int i = 0; i < ar4_count; i++) {
+    for (int i = 0; i < ar4_count; i++) { //frees all of AR4 memory
         free(AR4[i]);
     }
+    printf("Check Check3\n");
     free(AR4);
 
     return 0;
