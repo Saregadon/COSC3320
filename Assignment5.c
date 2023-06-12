@@ -17,11 +17,11 @@ int main() {
 
     int element_size = 1024 * 1024;  // 1MB
     struct timeval start, end;
-    long long elapsed_micros, elapsed_seconds;
+    long long elapsed_micros, elapsed_seconds, elapsed_milliseconds;
 
     gettimeofday(&start, NULL);
     int count = 0;
-    while (count < 130001) { // 130000 = m
+    while (count < 130001) { // 130000*3 = m = 390,000
       if (available_memory < element_size) break;
         int* Array1 = (int*)malloc(element_size);
       if(Array1 == NULL) break;
@@ -52,8 +52,8 @@ int main() {
     }
     gettimeofday(&end, NULL);
     elapsed_micros = (end.tv_sec - start.tv_sec) * 1000000LL + (end.tv_usec - start.tv_usec);
-    elapsed_seconds = elapsed_micros / 1000000; // seconds
-    printf("Time taken for deallocation of even number elements: %lld seconds\n", elapsed_seconds);
+    elapsed_milliseconds = elapsed_micros / 1000; // milliseconds
+    printf("Time taken for deallocation of even number elements: %lld milliseconds\n", elapsed_milliseconds);
 
     gettimeofday(&start, NULL);
     int** tempAR4 = NULL;
