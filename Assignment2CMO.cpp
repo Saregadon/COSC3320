@@ -75,7 +75,9 @@ int main() {
 //g++ Assignment2.cpp -o Assignment && ./Assignment to build and run
 
 /*
-//HYPOTHESIS - I believe the Row Major Order will be faster given in class it's described as being faster.
+//
+HYPOTHESIS - I believe the Row Major Order will be faster given in class it's described as being faster.
+Conclusion - They are both essentially the same when being conducted.
 
 DATA STRUCTURES USED - Map, doubly linked list
 

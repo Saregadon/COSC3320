@@ -48,6 +48,13 @@ for n in sequence:
 
 #Timing 
 """
+Hypothesis - The switching of the cases given whether it measures I or J first won't matter.
+It will still end up as the same measured timings.
+
+Conclusion - Measuring the version where i is the first for loop went almost twice as fast as
+when using the J loop for. I was to believe that a simple switch of the algorithm wouldn't change
+anything and that it would simply be just as fast.
+
 The code measures the execution time of two versions of matrix addition algorithm for different 
 matrix sizes. It generates random matrices A and B of size n x n, initializes matrix C with zeros, 
 and then performs the matrix addition using either version 1 or version 2. The execution time is 

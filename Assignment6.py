@@ -28,6 +28,7 @@ target = 2147483647 #target that we won't find
 
 durations = []
 
+#initialize array
 for arr in arrays: #main
     fill(arr)
     start = time.perf_counter()
@@ -36,6 +37,7 @@ for arr in arrays: #main
     end = time.perf_counter()
     durations.append((end - start))  # In seconds
 
+#print out timings
 for i, duration in enumerate(durations):
     print(f"Time {i + 1}: {duration} seconds")
 

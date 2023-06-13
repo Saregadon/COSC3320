@@ -76,6 +76,8 @@ int main() {
 
 /*
 DATA STRUCTURES USED - Map, doubly linked list
+Hypothesis - I believe Row Major Order will be shorter in length of time than if it were in column major order.
+Conclusion - They're both the same length of time. I was wrong.
 
 The code uses an unordered map pageTable to track the pages currently in main memory. It maps page numbers to boolean 
 values to indicate whether a page is present in memory.

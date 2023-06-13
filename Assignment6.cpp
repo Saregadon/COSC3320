@@ -40,6 +40,7 @@ int main() {
     return 0;
 }
 
+//initializes the vector of arrays
 void fill(vector<int>& arr){
     random_device rd;
     mt19937 gen(rd());
@@ -49,6 +50,7 @@ void fill(vector<int>& arr){
     }
 }
 
+//Binary search function for C++
 int binarySearch(const std::vector<int>& arr, int target) {
     int left = 0;
     int right = arr.size() - 1;

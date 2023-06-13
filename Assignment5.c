@@ -19,6 +19,7 @@ int main() {
     struct timeval start, end;
     long long elapsed_micros, elapsed_seconds, elapsed_milliseconds;
 
+    //allocates the memory by 3m, m = count or size
     gettimeofday(&start, NULL);
     int count = 0;
     while (count < 130001) { // 130000*3 = m = 390,000
@@ -45,6 +46,7 @@ int main() {
     printf("Time taken for initial allocation: %lld seconds\n", elapsed_seconds);
     printf("Number of elements in AR1, AR2, AR3: %d\n", count);
     gettimeofday(&start, NULL);
+    //frees every array of i % 2 = 0
     for (int i = 0; i < count; i += 2) {
         free(AR1[i]);
         free(AR2[i]);
@@ -55,6 +57,7 @@ int main() {
     elapsed_milliseconds = elapsed_micros / 1000; // milliseconds
     printf("Time taken for deallocation of even number elements: %lld milliseconds\n", elapsed_milliseconds);
 
+    //now to reallocate AR4 as we've only deallocated memory from AR1, AR2, AR3 of 2. We cannot reallocate
     gettimeofday(&start, NULL);
     int** tempAR4 = NULL;
     int ar4_count = 0;
@@ -136,7 +139,8 @@ and AR3, and another for loop iterates over the elements of AR4, performing memo
 complexity of the deallocation operation (free) is O(1). Therefore, the time complexity of this section is O(p + q), 
 where p is the number of odd-indexed elements in AR1, AR2, and AR3, and q is the number of elements in AR4.
 Overall, the time complexity of the code can be expressed as O(n + m + k + p + q).
-As for the space complexity, the code uses dynamic memory allocation to allocate and deallocate memory blocks. The 
+Space Complexity - 
+The code uses dynamic memory allocation to allocate and deallocate memory blocks. The 
 space complexity mainly depends on the maximum number of memory blocks allocated simultaneously, which is determined 
 by the available memory and the element sizes.
 In this code, there are four arrays: AR1, AR2, AR3, and AR4. The space complexity is determined by the total size of 
