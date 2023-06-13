@@ -1,11 +1,12 @@
 #include <iostream>
 #include <unordered_map>
 #include <list>
+#include <chrono>
 
-const int PAGE_SIZE = 2000; //page size in words
-const int ACTIVE_MEMORY_SIZE = 1000; //max number of pages based on LRU
+const int PAGE_SIZE = 2000;
+const int ACTIVE_MEMORY_SIZE = 1000;
 
-int calculatePageNumber(int i, int j) { //calculates page transfer counts
+int calculatePageNumber(int i, int j) {
     return (i * j) * 10;
 }
 
@@ -34,7 +35,7 @@ std::pair<int, int> calculatePageTransfersColumnMajor() {
             }
 
             // Access B[i, j]
-            page = calculatePageNumber(j, i);
+            page = calculatePageNumber(i, j);
             if (pageTable.find(page) == pageTable.end()) {
                 if (activePages.size() < ACTIVE_MEMORY_SIZE) {
                     activePages.push_back(page);
@@ -54,27 +55,40 @@ std::pair<int, int> calculatePageTransfersColumnMajor() {
     return std::make_pair(totalReads, totalWrites);
 }
 
-
-
 int main() {
+    std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
+
     std::pair<int, int> pageTransfers = calculatePageTransfersColumnMajor();
     int totalReads = pageTransfers.first;
     int totalWrites = pageTransfers.second;
 
+    std::chrono::steady_clock::time_point endTime = std::chrono::steady_clock::now();
+    std::chrono::duration<double> duration = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
+
     std::cout << "Total reads: " << totalReads << std::endl;
     std::cout << "Total writes: " << totalWrites << std::endl;
+    std::cout << "Execution time: " << duration.count() << " seconds" << std::endl;
 
     return 0;
 }
+
 //g++ Assignment2.cpp -o Assignment && ./Assignment to build and run
 
 /*
+//HYPOTHESIS - I believe the Row Major Order will be faster given in class it's described as being faster.
+
+DATA STRUCTURES USED - Map, doubly linked list
+
 The code uses an unordered map pageTable to track the pages currently in main memory. It maps page numbers to boolean 
 values to indicate whether a page is present in memory.
 A list activePages is used to simulate the LRU replacement strategy. It keeps track of the most recently used pages, 
 with the least recently used page being at the front of the list.
 In this column-major order version, the outer loop iterates over the columns (j), and the inner loop iterates over the 
 rows (i). This ensures that elements from the same column are accessed consecutively.
+Both row-major and column-major order versions access both arrays A and B in the same order. The difference lies in 
+the order of iterating over the dimensions (i and j) and the arguments passed to the calculatePageNumber function.
+
+//CONCLUSION - The Row Major order and Column Major order run the same time.
 
 Time Complexity -
 The time complexity is O(N^2) where n is the max cases which is i = 4000 and j = 4000. So it is O(n^2) where n = 4000.
@@ -85,4 +99,19 @@ pageTable: An unordered map that can hold a maximum of 1000 pages in memory. As 
 as 1000, the space complexity of the pageTable is O(ACTIVE_MEMORY_SIZE), which is O(1) in this case.
 activePages: A list that simulates the LRU replacement strategy. It can hold a maximum of 1000 page numbers. Thus, the 
 space complexity of the activePages list is O(ACTIVE_MEMORY_SIZE), which is O(1) as well.
+
+//Read 1
+Total reads: 16000000
+Total writes: 15999000
+Execution time: 13.3445 seconds
+
+//Read 2
+Total reads: 16000000
+Total writes: 15999000
+Execution time: 13.399 seconds
+
+//Read 3
+Total reads: 16000000
+Total writes: 15999000
+Execution time: 13.368 seconds
 */

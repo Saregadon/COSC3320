@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <chrono>
 #include <random>
@@ -48,7 +49,7 @@ int main() {
         arr[i] = dis(gen);
     }
 
-    //sort(arr.begin(), arr.end()); // Sort the array in ascending order to make the worst case which is O(n^2)
+    sort(arr.begin(), arr.end()); // Sort the array in ascending order to make the worst case which is O(n^2)
                                   // Delete to have average case of O(n*logn)
     time_point<steady_clock> start, end;
     start = steady_clock::now();
@@ -64,6 +65,14 @@ int main() {
 g++ Assignment3.cpp -o Assignment && ./Assignment 
 to run the code */
 /*
+DATA STRUCTURES USED - Vectors, Number engine generator, uniiform distribution oject
+
+The provided code implements the QuickSort algorithm to sort a vector of integers. 
+It uses the partition function to choose a pivot element and rearrange the elements 
+in the vector such that all elements smaller than the pivot are placed before it and 
+all elements greater than the pivot are placed after it. The quickSort function 
+recursively calls itself to sort the subarrays on the left and right of the pivot.
+
 When the input array is already sorted (either in ascending or descending order) or 
 contains many elements with the same value.
 In such cases, if the pivot selection and partitioning strategy are not optimized, 
@@ -81,4 +90,20 @@ pivot selection or partitioning strategy, which can contribute to the worst-case
 However, in practice, randomized pivot selection or other techniques can be employed to mitigate 
 the chances of encountering the worst-case scenario and achieve better average-case or expected 
 time complexity of O(n log n).
+
+//O(n log n)
+//Timing 1
+Time: 0 nanoseconds
+//Timing 2
+Time: 1.003e+006 nanoseconds
+//Timing 3
+Time: 0 nanoseconds
+
+//O(n^2) //uncomment the sort mechanic
+//Timing 1
+Time: 1.001e+006 nanoseconds
+//Timing 2
+Time: 979000 nanoseconds
+//Timing 3
+Time: 1.004e+006 nanoseconds
 */
